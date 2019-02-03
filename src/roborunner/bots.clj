@@ -11,12 +11,14 @@
   "Gets the list file objects representing the bots found"
   [dir]
   (.mkdir (io/file bot-dir))
-  (.listFiles (io/file dir)))
+  (map #(.getAbsolutePath %)
+       (.listFiles (io/file dir))))
 
 
 (defn bot-name
   [bot-file]
   (-> bot-file
+      (io/file)
       (.getName)
       (str/split #"\.")
       (first)))
@@ -59,5 +61,13 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
 
 (defn get-classname
   [jar-file]
-  (let [props (parse-properties-file (read-properties-file jar-file))]
+  (let [props-file (read-properties-file jar-file)
+        props (parse-properties-file props-file)]
     (get props "robot.classname")))
+
+
+(defn gather-bot-info
+  [bot-jar]
+  {:name (bot-name bot-jar)
+   :class (get-classname bot-jar)
+   :path bot-jar})

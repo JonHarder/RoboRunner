@@ -23,6 +23,5 @@
   [& args]
   (let [bots (->> bots/bot-dir
                   (bots/get-bots)
-                  (map #(.getAbsolutePath %))
-                  (map bots/get-classname))]
+                  (map bots/gather-bot-info))]
     (println bots)))
