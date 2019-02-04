@@ -20,6 +20,7 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (doseq [battle-file (battle/create-battles (bots/get-bots))]
-    (println battle-file)
-    (println)))
+  (let [battles (battle/create-battles (bots/get-bots))]
+    (doseq [b battles]
+      (println b)
+      (println))))
