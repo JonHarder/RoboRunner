@@ -4,15 +4,19 @@
             [roborunner.jar :as jar]))
 
 
-(def bot-dir "/Users/jharder/bots/")
+(def bot-dir "/Users/jharder/robocode/robots")
 
 
 (defn get-bots
-  "Gets the list file objects representing the bots found"
-  [dir]
-  (.mkdir (io/file bot-dir))
-  (map #(.getAbsolutePath %)
-       (.listFiles (io/file dir))))
+  "Returns a list of absolute file paths to all of the bots"
+  ([]
+   (get-bots bot-dir))
+  ([dir]
+   (.mkdir (io/file bot-dir))
+   (let [files (file-seq (io/file dir))
+         jar-files (filter #(.endsWith (.getName %) ".jar") files)]
+     (map #(.getAbsolutePath %)
+          jar-files))))
 
 
 (defn bot-name
@@ -22,20 +26,6 @@
       (.getName)
       (str/split #"\.")
       (first)))
-
-
-(defn generate-battle-file
-  "this needs to know the bots project name as well somehow..."
-  [bot1 bot2]
-  (format "#Battle Properties
-robocode.battleField.width=800
-robocode.battleField.height=600
-robocode.battle.numRounds=36
-robocode.battle.gunCoolingRate=0.1
-robocode.battle.rules.inactivityTime=450
-robocode.battle.selectedRobots=%s,%s
-robocode.battle.hideEnemyNames=false
-robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
 
 
 (defn make-equals-pair

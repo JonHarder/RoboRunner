@@ -1,6 +1,5 @@
 (ns roborunner.core
-  (:require [roborunner.pairs :as pairs]
-            [roborunner.bots :as bots])
+  (:require [roborunner.battle :as battle])
   (:gen-class))
 
 
@@ -21,7 +20,6 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (let [bots (->> bots/bot-dir
-                  (bots/get-bots)
-                  (map bots/gather-bot-info))]
-    (println bots)))
+  (doseq [battle-file (battle/create-battles (bots/get-bots))]
+    (println battle-file)
+    (println)))
