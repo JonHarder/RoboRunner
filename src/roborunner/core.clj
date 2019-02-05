@@ -1,5 +1,6 @@
 (ns roborunner.core
-  (:require [roborunner.battle :as battle])
+  (:require [roborunner.battle :as battle]
+            [roborunner.bots :as bots])
   (:gen-class))
 
 
@@ -20,7 +21,5 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (let [battles (battle/create-battles (bots/get-bots))]
-    (doseq [b battles]
-      (println b)
-      (println))))
+  (let [bots (bots/get-bots)]
+    (battle/create-battles bots "/Users/jharder/robocode/battles")))
