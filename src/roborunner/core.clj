@@ -18,9 +18,12 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (let [battle-folder "/Users/jharder/robocode/battles"
-        bots (bots/get-bots)]
-    (battle/create-battles bots battle-folder)
-    (let [battle-files (.list (io/file battle-folder))]
-      (doseq [battle-file battle-files]
-        (println (battle/parse-battle-results (battle/run-battle battle-file)))))))
+  (let [battle-folder (first args)
+        robots-folder (second args)]
+    (if (and battle-folder robots-folder)
+      (let [bots (bots/get-bots)]
+        (battle/create-battles bots battle-folder)
+        (let [battle-files (.list (io/file battle-folder))]
+          (doseq [battle-file battle-files]
+            (println (battle/parse-battle-results (battle/run-battle battle-file))))))
+      (println "USAGE: roborunner BATTLE_FOLDER ROBOTS_FOLDER"))))
