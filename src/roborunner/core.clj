@@ -14,6 +14,11 @@
 ;; front end standings
 ;; specific match replayer
 
+(defn- usage
+  []
+  (println "USAGE: roborunner BATTLE_FOLDER ROBOTS_FOLDER")
+  (System/exit 1))
+
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -26,4 +31,4 @@
         (let [battle-files (.list (io/file battle-folder))]
           (doseq [battle-file battle-files]
             (println (battle/parse-battle-results (battle/run-battle battle-file))))))
-      (println "USAGE: roborunner BATTLE_FOLDER ROBOTS_FOLDER"))))
+      (usage))))
