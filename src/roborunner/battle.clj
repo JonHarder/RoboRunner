@@ -1,7 +1,9 @@
 (ns roborunner.battle
   (:require [roborunner.pairs :as pairs]
             [roborunner.bots :as bots]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.java.shell :as shell]
+            [clojure.string :as str]))
 
 
 (defn- generate-battle-file
@@ -35,7 +37,26 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
   (let [pairings (pairs/unique-pairs bot-jars)]
     (map (partial write-battle-file battle-folder) pairings)))
 
-    
+
+(defn run-battle
+  [battle-file]
+  (:out (shell/sh "/Users/jharder/robocode/robocode.sh"
+                  "-battle"
+                  battle-file
+                  "-nodisplay")))
 
 
-      
+(defn- parse-single-result
+  "takes a single battle result like: '1st: foo.Bot\t1055 (34%)\t100\t20\t900\t17\t18\t0\t3\t33\t0\t'"
+  [result]
+  (let [items (str/split result #"\t")
+        bot-class (second (str/split (first items) #" "))
+        score (Integer. (first (str/split (second items) #" ")))]
+    {:name bot-class :score score}))
+  
+
+
+(defn parse-battle-results
+  [battle-results]
+  (let [results (reverse (take 2 (reverse (str/split-lines battle-results))))]
+    (map parse-single-result results)))
