@@ -5,8 +5,10 @@
 
 ;; run each battle for each battle file, store results
 ;; once you have results, figure out accumulated points for each bot
-;;             with round multiplier (r1 = 1.0, r2 = 1.5, r3 = 2.0)
+;;   with round multiplier (r1 = 1.0, r2 = 1.5, r3 = 2.0)
 ;; generate standings
+;;   - cumulative points? are points comparable between battles?
+;;   - stricly off of number of wins?  points don't really matter then...
 
 ;; optional v2
 ;; front end standings
@@ -23,6 +25,5 @@
   (let [battle-folder (first args)
         robots-folder (second args)]
     (if (and battle-folder robots-folder)
-      (doseq [result (runner/run battle-folder robots-folder)]
-        (println result))
+      (println (runner/run battle-folder robots-folder))
       (usage))))

@@ -4,10 +4,24 @@
             [clojure.java.io :as io]))
 
 
+(defn- calculate-battle-scores
+  [results]
+  (let [grouped-results (group-by :name results)]
+    (reduce (fn [score-map [key val]]
+              (let [score (reduce + (map :score val))]
+                (assoc score-map key score)))
+            {}
+            grouped-results)))
+
+
 (defn run
   [battle-folder robots-folder]
   (let [bots (bots/get-bots robots-folder)]
     (battle/create-battles bots battle-folder)
-    (let [battle-files (.list (io/file battle-folder))]
-      (map battle/run-battle battle-files))))
+    (->> battle-folder
+         (io/file)
+         (.list)
+         (map battle/run-battle)
+         (apply concat)
+         (calculate-battle-scores))))
 
