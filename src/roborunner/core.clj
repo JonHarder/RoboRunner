@@ -21,7 +21,7 @@
   (let [battle-folder (first args)
         robots-folder (second args)]
     (if (and battle-folder robots-folder)
-      (let [bots (bots/get-bots)]
+      (let [bots (bots/get-bots robots-folder)]
         (battle/create-battles bots battle-folder)
         (let [battle-files (.list (io/file battle-folder))]
           (doseq [battle-file battle-files]
