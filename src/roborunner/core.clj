@@ -1,7 +1,5 @@
 (ns roborunner.core
-  (:require [roborunner.battle :as battle]
-            [roborunner.bots :as bots]
-            [clojure.java.io :as io])
+  (:require [roborunner.runner :as runner])
   (:gen-class))
 
 
@@ -16,8 +14,7 @@
 
 (defn- usage
   []
-  (println "USAGE: roborunner BATTLE_FOLDER ROBOTS_FOLDER")
-  (System/exit 1))
+  (println "USAGE: roborunner BATTLE_FOLDER ROBOTS_FOLDER"))
 
 
 (defn -main
@@ -26,9 +23,6 @@
   (let [battle-folder (first args)
         robots-folder (second args)]
     (if (and battle-folder robots-folder)
-      (let [bots (bots/get-bots robots-folder)]
-        (battle/create-battles bots battle-folder)
-        (let [battle-files (.list (io/file battle-folder))]
-          (doseq [battle-file battle-files]
-            (println (battle/parse-battle-results (battle/run-battle battle-file))))))
+      (doseq [result (runner/run battle-folder robots-folder)]
+        (println result))
       (usage))))

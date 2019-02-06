@@ -38,7 +38,7 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
     (map (partial write-battle-file battle-folder) pairings)))
 
 
-(defn run-battle
+(defn- execute-battle
   [battle-file]
   (:out (shell/sh "/Users/jharder/robocode/robocode.sh"
                   "-battle"
@@ -55,8 +55,13 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
     {:name bot-class :score score}))
   
 
-
-(defn parse-battle-results
+(defn- parse-battle-results
   [battle-results]
   (let [results (reverse (take 2 (reverse (str/split-lines battle-results))))]
     (map parse-single-result results)))
+
+
+(defn run-battle
+  [battle-file]
+  (let [results (execute-battle battle-file)]
+    (parse-battle-results results)))
