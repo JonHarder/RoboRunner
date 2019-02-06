@@ -1,4 +1,5 @@
-(ns roborunner.pairs)
+(ns roborunner.pairs
+  (:require [clojure.set]))
 
 
 (defn- arrange-single-pairs
