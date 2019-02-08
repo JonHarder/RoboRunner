@@ -55,13 +55,12 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
   [result]
   (let [items (str/split result #"\t")
         bot-class (second (str/split (first items) #" "))
-        score (Integer. (re-find #"[0-9]+" (second (str/split (second items) #" "))))
-        score2 (-> items
-                   second
-                   (str/split #" ")
-                   second
-                   parse-int)]
-    {:name bot-class :score score2}))
+        score (-> items
+                  second
+                  (str/split #" ")
+                  second
+                  parse-int)]
+    {:name bot-class :score score}))
   
 
 (defn- parse-battle-results
