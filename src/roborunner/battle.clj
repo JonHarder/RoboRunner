@@ -45,6 +45,7 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
                   battle-file
                   "-nodisplay")))
 
+
 (defn- parse-int
   [str-with-number]
   (Integer. (re-find #"[0-9]+" str-with-number)))

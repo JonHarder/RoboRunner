@@ -14,6 +14,7 @@
             {}
             grouped-results)))
 
+
 (defn- sort-battle-results
   [battle-results]
   (sort #(compare (second %2) (second %1)) battle-results))
