@@ -12,6 +12,9 @@
 ;; once you have results, figure out accumulated points for each bot
 ;;   with round multiplier (r1 = 1.0, r2 = 1.5, r3 = 2.0)
 
+;; posting to battles should create a new battle with its own scores
+;; get /battles/:id should give you battle results for that battle
+
 ;; optional v2
 ;; specific match replayer
 
