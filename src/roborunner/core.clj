@@ -4,19 +4,15 @@
             [compojure.core :refer [defroutes GET POST]]
             [compojure.route :as route]
             [ring.middleware.json :refer [wrap-json-params]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [clojure.data.json :as json])
   (:gen-class))
 
 
-;; run each battle for each battle file, store results
 ;; once you have results, figure out accumulated points for each bot
 ;;   with round multiplier (r1 = 1.0, r2 = 1.5, r3 = 2.0)
-;; generate standings
-;;   - cumulative points? are points comparable between battles?
-;;   - stricly off of number of wins?  points don't really matter then...
 
 ;; optional v2
-;; front end standings
 ;; specific match replayer
 
 
@@ -48,4 +44,7 @@
 
 (def app
   (-> routes
-      wrap-json-params))
+      wrap-json-params
+      (wrap-cors :access-control-allow-origin [#".*"]
+                 :access-control-allow-credentials "true"
+                 :access-control-allow-methods [:get :post])))

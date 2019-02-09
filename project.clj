@@ -7,6 +7,7 @@
                  [compojure "1.6.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-json "0.4.0"]
+                 [ring-cors "0.1.13"]
                  [org.clojure/data.json "0.2.6"]]
   :plugins [[lein-ring "0.12.4"]]
   :ring {:handler roborunner.core/app}
