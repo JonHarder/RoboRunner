@@ -1,5 +1,10 @@
 (ns roborunner.core
-  (:require [roborunner.runner :as runner])
+  (:require [roborunner.bots :as bots]
+            [roborunner.runner :as runner]
+            [compojure.core :refer [defroutes GET POST]]
+            [compojure.route :as route]
+            [ring.middleware.json :refer [wrap-json-params]]
+            [clojure.data.json :as json])
   (:gen-class))
 
 
@@ -14,16 +19,33 @@
 ;; front end standings
 ;; specific match replayer
 
-(defn- usage
-  []
-  (println "USAGE: roborunner BATTLE_FOLDER ROBOTS_FOLDER"))
+
+(defn response [data & [status]]
+  "Take some data and serialize it into a response body containing json"
+  {:status (or status 200)
+   :headers {"Content-Type" "application/json"}
+   :body (json/write-str data)})
 
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (let [battle-folder (first args)
-        robots-folder (second args)]
-    (if (and battle-folder robots-folder)
-      (println (runner/run battle-folder robots-folder))
-      (usage))))
+(defroutes routes
+  (GET "/standings"
+      []
+    (if-let [battle-results (runner/read-battle-results)]
+      (response battle-results)
+      ""))
+  (GET "/robots"
+      []
+    (response (map bots/bot-name (bots/get-bots))))
+  (POST "/battles"
+      []
+    (future (runner/run
+              "/Users/jharder/robocode/battles"
+              "/Users/jharder/robocode/robots"))
+    (response {:message "battle started" :forward "/standings"} 201))
+  (route/not-found
+   (response {:message "not found"} 404)))
+
+
+(def app
+  (-> routes
+      wrap-json-params))

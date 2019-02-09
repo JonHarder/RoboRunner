@@ -46,12 +46,21 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
                   "-nodisplay")))
 
 
+(defn- parse-int
+  [str-with-number]
+  (Integer. (re-find #"[0-9]+" str-with-number)))
+
+
 (defn- parse-single-result
   "takes a single battle result like: '1st: foo.Bot\t1055 (34%)\t100\t20\t900\t17\t18\t0\t3\t33\t0\t'"
   [result]
   (let [items (str/split result #"\t")
         bot-class (second (str/split (first items) #" "))
-        score (Integer. (first (str/split (second items) #" ")))]
+        score (-> items
+                  second
+                  (str/split #" ")
+                  second
+                  parse-int)]
     {:name bot-class :score score}))
   
 
