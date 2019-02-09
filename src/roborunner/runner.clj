@@ -1,6 +1,7 @@
 (ns roborunner.runner
   (:require [roborunner.bots :as bots]
             [roborunner.battle :as battle]
+            [clojure.data.json :as json]
             [clojure.java.io :as io]))
 
 
@@ -25,6 +26,23 @@
           {}
           results))
 
+(def score-file "/tmp/roborunner/scores")
+
+
+(defn- save-battle-results
+  [battle-scores]
+  (io/make-parents score-file)
+  (spit score-file (json/write-str battle-scores))
+  battle-scores)
+
+
+(defn read-battle-results
+  []
+  (let [f (io/file score-file)]
+    (if (.exists f)
+      (json/read-str (slurp f))
+      nil)))
+
 
 (defn- sort-battle-results
   [battle-results]
@@ -39,5 +57,6 @@
          io/file
          .list
          (map battle/run-battle)
-         calculate-battle-scores)))
+         calculate-battle-scores
+         save-battle-results)))
 
