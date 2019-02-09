@@ -36,12 +36,10 @@
     (response (map bots/bot-name (bots/get-bots))))
   (POST "/battles"
       []
-    (response (do
-                (future (runner/run
-                          "/Users/jharder/robocode/battles"
-                          "/Users/jharder/robocode/robots"))
-                {:message "battle started" :forward "/standings"})
-              201))
+    (future (runner/run
+              "/Users/jharder/robocode/battles"
+              "/Users/jharder/robocode/robots"))
+    (response {:message "battle started" :forward "/standings"} 201))
   (route/not-found
    (response {:message "not found"} 404)))
 
