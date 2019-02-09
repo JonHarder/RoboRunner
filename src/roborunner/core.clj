@@ -29,9 +29,7 @@
 (defroutes routes
   (GET "/standings"
       []
-    (if-let [battle-results (runner/read-battle-results)]
-      (response battle-results)
-      ""))
+    (response (or (runner/read-battle-results) {:message "in progress"})))
   (GET "/robots"
       []
     (response (map bots/bot-name (bots/get-bots))))
