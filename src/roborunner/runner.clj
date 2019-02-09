@@ -51,6 +51,8 @@
 
 (defn run
   [battle-folder robots-folder]
+  ;; delete current scores so people requesting standings aren't confised with old stats
+  (io/delete-file score-file)
   (let [bots (bots/get-bots robots-folder)]
     (battle/create-battles bots battle-folder)
     (->> battle-folder
