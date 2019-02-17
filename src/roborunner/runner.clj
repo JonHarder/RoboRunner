@@ -26,14 +26,24 @@
           {}
           results))
 
-(def score-file "/tmp/roborunner/scores")
+(defn- num-battles
+  "Checks the battle results folder to see how many battles have been played."
+  []
+  (-> "/tmp/roborunner/"
+      io/file
+      .list
+      count))
 
 
 (defn- save-battle-results
   [battle-scores]
-  (io/make-parents score-file)
-  (spit score-file (json/write-str battle-scores))
-  battle-scores)
+  (let [result-folder "/tmp/roborunner/"
+        result-num (inc (num-battles))
+        result-file (str result-folder result-num ".json")]
+     (io/make-parents result-file)
+     (println (str "writing results to " result-file))
+     (spit result-file (json/write-str battle-scores))
+     battle-scores))
 
 
 (defn read-battle-results
@@ -46,15 +56,6 @@
       nil)))
 
 
-(defn- num-battles
-  "Checks the battle results folder to see how many battles have been played."
-  []
-  (-> "/tmp/roborunner/"
-      io/file
-      .list
-      count))
-
-
 (defn- sort-battle-results
   [battle-results]
   (sort #(compare (second %2) (second %1)) battle-results))
@@ -62,8 +63,6 @@
 
 (defn run
   [battle-folder robots-folder]
-  ;; delete current scores so people requesting standings aren't confised with old stats
-  (io/delete-file score-file)
   (let [bots (bots/get-bots robots-folder)]
     (battle/create-battles bots battle-folder)
     (->> battle-folder
