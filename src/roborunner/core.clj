@@ -27,20 +27,20 @@
 
 
 (defroutes routes
-  (GET "/standings"
-      []
-    (response (or (runner/read-battle-results) {:message "in progress"})))
   (GET "/robots"
-      []
+    []
     (response (map bots/bot-name (bots/get-bots))))
   (POST "/battles"
-      []
+    []
     (future (runner/run
               "/Users/jharder/robocode/battles"
               "/Users/jharder/robocode/robots"))
     (response {:message "battle started" :forward "/standings"} 201))
+  (GET "/battles/:id"
+    [id]
+    (response (runner/read-battle-results id)))
   (route/not-found
-   (response {:message "not found"} 404)))
+    (response {:message "not found"} 404)))
 
 
 (def app

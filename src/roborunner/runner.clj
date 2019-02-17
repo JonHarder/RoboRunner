@@ -37,11 +37,22 @@
 
 
 (defn read-battle-results
-  []
-  (let [f (io/file score-file)]
+  [n]
+  (let [results-folder "/tmp/roborunner/"
+        result-file (str results-folder n ".json")
+        f (io/file result-file)]
     (if (.exists f)
-      (json/read-str (slurp f))
+       (json/read-str (slurp f))
       nil)))
+
+
+(defn- num-battles
+  "Checks the battle results folder to see how many battles have been played."
+  []
+  (-> "/tmp/roborunner/"
+      io/file
+      .list
+      count))
 
 
 (defn- sort-battle-results
