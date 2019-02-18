@@ -1,6 +1,7 @@
 (ns roborunner.core
   (:require [roborunner.bots :as bots]
             [roborunner.runner :as runner]
+            [roborunner.websockets :as websockets]
             [compojure.core :refer [defroutes GET POST]]
             [compojure.route :as route]
             [ring.middleware.json :refer [wrap-json-params]]
@@ -30,15 +31,24 @@
   (GET "/robots"
     []
     (response (map bots/bot-name (bots/get-bots))))
+
   (POST "/battles"
-    []
-    (future (runner/run
-              "/Users/jharder/robocode/battles"
-              "/Users/jharder/robocode/robots"))
-    (response {:message "battle started" :forward "/standings"} 201))
+      []
+      (future (runner/run
+                "/Users/jharder/robocode/battles"
+                "/Users/jharder/robocode/robots"))
+      (let [battle-id (inc (runner/num-battles))
+            link (str "/battles/" battle-id)]
+        (response {:message "battle started" :forward link} 201)))
+
   (GET "/battles/:id"
-    [id]
-    (response (runner/read-battle-results id)))
+      [id]
+      (response (runner/read-battle-results id)))
+
+  (GET "/ws"
+      request
+      (websockets/ws-handler request))
+    
   (route/not-found
     (response {:message "not found"} 404)))
 
