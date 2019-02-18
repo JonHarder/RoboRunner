@@ -5,8 +5,8 @@
             [clojure.java.io :as io]))
 
 
-(def battle-dir "/Users/jharder/robocode/battles")
-(def robot-dir "/Users/jharder/robocode/robots")
+(def battle-dir (System/getenv "ROBORUNNER_BATTLE_DIR"))
+(def robot-dir (System/getenv "ROBORUNNER_ROBOT_DIR"))
 
 
 (defn- battle-pair-flatten
@@ -45,7 +45,6 @@
         result-num (inc (num-battles))
         result-file (str result-folder result-num ".json")]
      (io/make-parents result-file)
-     (println (str "writing results to " result-file))
      (spit result-file (json/write-str battle-scores))
      battle-scores))
 

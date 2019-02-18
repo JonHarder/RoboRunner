@@ -11,16 +11,6 @@
   (:gen-class))
 
 
-;; once you have results, figure out accumulated points for each bot
-;;   with round multiplier (r1 = 1.0, r2 = 1.5, r3 = 2.0)
-
-;; posting to battles should create a new battle with its own scores
-;; get /battles/:id should give you battle results for that battle
-
-;; optional v2
-;; specific match replayer
-
-
 (defn response [data & [status]]
   "Take some data and serialize it into a response body containing json"
   {:status (or status 200)
@@ -40,6 +30,7 @@
     (future (runner/run))
     (let [battle-id (inc (runner/num-battles))
           link (str "/battles/" battle-id)]
+      (println "starting battle" battle-id)
       (response {:message "battle started" :forward link} 201)))
 
   (GET "/battles/:id"
