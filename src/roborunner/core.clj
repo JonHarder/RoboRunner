@@ -6,7 +6,8 @@
             [compojure.route :as route]
             [ring.middleware.json :refer [wrap-json-params]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [clojure.data.json :as json])
+            [clojure.data.json :as json]
+            [org.httpkit.server :refer [run-server]])
   (:gen-class))
 
 
@@ -30,13 +31,13 @@
 (defroutes routes
   (GET "/robots"
     []
-    (response (map bots/bot-name (bots/get-bots))))
+    (-> bots/get-bots
+        (map bots/bot-name)
+        response))
 
   (POST "/battles"
       []
-      (future (runner/run
-                "/Users/jharder/robocode/battles"
-                "/Users/jharder/robocode/robots"))
+      (future (runner/run))
       (let [battle-id (inc (runner/num-battles))
             link (str "/battles/" battle-id)]
         (response {:message "battle started" :forward link} 201)))
@@ -59,3 +60,11 @@
       (wrap-cors :access-control-allow-origin [#".*"]
                  :access-control-allow-credentials "true"
                  :access-control-allow-methods [:get :post])))
+
+
+(defn -main
+  [& args]
+  (let [port 3000]
+    (println "server started!")
+    (println (str "listening on localhost:" port))
+    (run-server app {:port port})))

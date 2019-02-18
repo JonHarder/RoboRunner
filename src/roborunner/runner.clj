@@ -5,6 +5,10 @@
             [clojure.java.io :as io]))
 
 
+(def battle-dir "/Users/jharder/robocode/battles")
+(def robot-dir "/Users/jharder/robocode/robots")
+
+
 (defn- battle-pair-flatten
   [result-pair]
   (let [[f s] result-pair]
@@ -61,13 +65,15 @@
 
 
 (defn run
-  [battle-folder robots-folder]
-  (let [bots (bots/get-bots robots-folder)]
-    (battle/create-battles bots battle-folder)
-    (->> battle-folder
-         io/file
-         .list
-         (map battle/run-battle)
-         calculate-battle-scores
-         save-battle-results)))
+  ([battle-folder robots-folder]
+   (let [bots (bots/get-bots robots-folder)]
+     (battle/create-battles bots battle-folder)
+     (->> battle-folder
+          io/file
+          .list
+          (map battle/run-battle)
+          calculate-battle-scores
+          save-battle-results)))
+  ([]
+   (run battle-dir robot-dir)))
 
