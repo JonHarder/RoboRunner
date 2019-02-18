@@ -5,6 +5,10 @@
             [clojure.java.io :as io]))
 
 
+(def battle-dir "/Users/jharder/robocode/battles")
+(def robot-dir "/Users/jharder/robocode/robots")
+
+
 (defn- battle-pair-flatten
   [result-pair]
   (let [[f s] result-pair]
@@ -26,27 +30,7 @@
           {}
           results))
 
-(def score-file "/tmp/roborunner/scores")
-
-
-(defn- save-battle-results
-  [battle-scores]
-  (io/make-parents score-file)
-  (spit score-file (json/write-str battle-scores))
-  battle-scores)
-
-
-(defn read-battle-results
-  [n]
-  (let [results-folder "/tmp/roborunner/"
-        result-file (str results-folder n ".json")
-        f (io/file result-file)]
-    (if (.exists f)
-       (json/read-str (slurp f))
-      nil)))
-
-
-(defn- num-battles
+(defn num-battles
   "Checks the battle results folder to see how many battles have been played."
   []
   (-> "/tmp/roborunner/"
@@ -55,21 +39,41 @@
       count))
 
 
+(defn- save-battle-results
+  [battle-scores]
+  (let [result-folder "/tmp/roborunner/"
+        result-num (inc (num-battles))
+        result-file (str result-folder result-num ".json")]
+     (io/make-parents result-file)
+     (println (str "writing results to " result-file))
+     (spit result-file (json/write-str battle-scores))
+     battle-scores))
+
+
+(defn read-battle-results
+  [n]
+  (let [results-folder "/tmp/roborunner/"
+        result-file (str results-folder n ".json")
+        f (io/file result-file)]
+    (when (.exists f)
+       (json/read-str (slurp f)))))
+
+
 (defn- sort-battle-results
   [battle-results]
   (sort #(compare (second %2) (second %1)) battle-results))
 
 
 (defn run
-  [battle-folder robots-folder]
-  ;; delete current scores so people requesting standings aren't confised with old stats
-  (io/delete-file score-file)
-  (let [bots (bots/get-bots robots-folder)]
-    (battle/create-battles bots battle-folder)
-    (->> battle-folder
-         io/file
-         .list
-         (map battle/run-battle)
-         calculate-battle-scores
-         save-battle-results)))
+  ([battle-folder robots-folder]
+   (let [bots (bots/get-bots robots-folder)]
+     (battle/create-battles bots battle-folder)
+     (->> battle-folder
+          io/file
+          .list
+          (map battle/run-battle)
+          calculate-battle-scores
+          save-battle-results)))
+  ([]
+   (run battle-dir robot-dir)))
 

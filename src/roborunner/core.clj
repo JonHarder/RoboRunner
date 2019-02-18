@@ -1,11 +1,13 @@
 (ns roborunner.core
   (:require [roborunner.bots :as bots]
             [roborunner.runner :as runner]
+            [roborunner.websockets :refer [ws-handler]]
             [compojure.core :refer [defroutes GET POST]]
             [compojure.route :as route]
             [ring.middleware.json :refer [wrap-json-params]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [clojure.data.json :as json])
+            [clojure.data.json :as json]
+            [org.httpkit.server :refer [run-server]])
   (:gen-class))
 
 
@@ -29,16 +31,25 @@
 (defroutes routes
   (GET "/robots"
     []
-    (response (map bots/bot-name (bots/get-bots))))
+    (-> bots/get-bots
+        (map bots/bot-name)
+        response))
+
   (POST "/battles"
     []
-    (future (runner/run
-              "/Users/jharder/robocode/battles"
-              "/Users/jharder/robocode/robots"))
-    (response {:message "battle started" :forward "/standings"} 201))
+    (future (runner/run))
+    (let [battle-id (inc (runner/num-battles))
+          link (str "/battles/" battle-id)]
+      (response {:message "battle started" :forward link} 201)))
+
   (GET "/battles/:id"
     [id]
     (response (runner/read-battle-results id)))
+
+  (GET "/ws"
+    request
+    (ws-handler request))
+    
   (route/not-found
     (response {:message "not found"} 404)))
 
@@ -49,3 +60,11 @@
       (wrap-cors :access-control-allow-origin [#".*"]
                  :access-control-allow-credentials "true"
                  :access-control-allow-methods [:get :post])))
+
+
+(defn -main
+  [& args]
+  (let [port 3000]
+    (println "server started!")
+    (println (str "listening on localhost:" port))
+    (run-server app {:port port})))
