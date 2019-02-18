@@ -1,7 +1,7 @@
 (ns roborunner.core
   (:require [roborunner.bots :as bots]
             [roborunner.runner :as runner]
-            [roborunner.websockets :as websockets]
+            [roborunner.websockets :refer [ws-handler]]
             [compojure.core :refer [defroutes GET POST]]
             [compojure.route :as route]
             [ring.middleware.json :refer [wrap-json-params]]
@@ -48,7 +48,7 @@
 
   (GET "/ws"
       request
-      (websockets/ws-handler request))
+      (ws-handler request))
     
   (route/not-found
     (response {:message "not found"} 404)))
