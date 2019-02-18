@@ -36,19 +36,19 @@
         response))
 
   (POST "/battles"
-      []
-      (future (runner/run))
-      (let [battle-id (inc (runner/num-battles))
-            link (str "/battles/" battle-id)]
-        (response {:message "battle started" :forward link} 201)))
+    []
+    (future (runner/run))
+    (let [battle-id (inc (runner/num-battles))
+          link (str "/battles/" battle-id)]
+      (response {:message "battle started" :forward link} 201)))
 
   (GET "/battles/:id"
-      [id]
-      (response (runner/read-battle-results id)))
+    [id]
+    (response (runner/read-battle-results id)))
 
   (GET "/ws"
-      request
-      (ws-handler request))
+    request
+    (ws-handler request))
     
   (route/not-found
     (response {:message "not found"} 404)))
