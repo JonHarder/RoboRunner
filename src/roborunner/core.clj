@@ -1,7 +1,8 @@
 (ns roborunner.core
   (:require [roborunner.bots :as bots]
             [roborunner.runner :as runner]
-            [roborunner.websockets :refer [ws-handler]]
+            [roborunner.battle :as battle]
+            [roborunner.websockets :refer [we-handler]]
             [compojure.core :refer [defroutes GET POST]]
             [compojure.route :as route]
             [ring.middleware.json :refer [wrap-json-params]]
@@ -28,7 +29,7 @@
   (POST "/battles"
     []
     (future (runner/run))
-    (let [battle-id (inc (runner/num-battles))
+    (let [battle-id (inc (battle/num-battles))
           link (str "/battles/" battle-id)]
       (println "starting battle" battle-id)
       (response {:message "battle started" :forward link} 201)))

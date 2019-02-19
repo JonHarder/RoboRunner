@@ -30,25 +30,6 @@
           {}
           results))
 
-(defn num-battles
-  "Checks the battle results folder to see how many battles have been played."
-  []
-  (-> "/tmp/roborunner/"
-      io/file
-      .list
-      count))
-
-
-(defn- save-battle-results
-  [battle-scores]
-  (let [result-folder "/tmp/roborunner/"
-        result-num (inc (num-battles))
-        result-file (str result-folder result-num ".json")]
-     (io/make-parents result-file)
-     (spit result-file (json/write-str battle-scores))
-     battle-scores))
-
-
 (defn read-battle-results
   [n]
   (let [results-folder "/tmp/roborunner/"
@@ -58,21 +39,15 @@
        (json/read-str (slurp f)))))
 
 
-(defn- sort-battle-results
-  [battle-results]
-  (sort #(compare (second %2) (second %1)) battle-results))
-
-
 (defn run
   ([battle-folder robots-folder]
    (let [bots (bots/get-bots robots-folder)]
      (battle/create-battles bots battle-folder)
-     (->> battle-folder
-          io/file
-          .list
+     (->> (battle/get-battle-files battle-folder)
           (map battle/run-battle)
           calculate-battle-scores
-          save-battle-results)))
+          battle/post-battle-cleanup)
+     (println "battle finished!")))
   ([]
    (run battle-dir robot-dir)))
 

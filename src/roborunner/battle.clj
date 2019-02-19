@@ -1,6 +1,8 @@
 (ns roborunner.battle
   (:require [roborunner.pairs :as pairs]
             [roborunner.bots :as bots]
+            [roborunner.websockets :as websockets]
+            [clojure.data.json :as json]
             [clojure.java.io :as io]
             [clojure.java.shell :as shell]
             [clojure.string :as str]))
@@ -68,6 +70,45 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
   [battle-results]
   (let [results (reverse (take 2 (reverse (str/split-lines battle-results))))]
     (map parse-single-result results)))
+
+
+(defn num-battles
+  "Checks the battle results folder to see how many battles have been played."
+  []
+  (-> "/tmp/roborunner/"
+      io/file
+      .list
+      count))
+
+
+(defn- save-battle-results
+  [battle-scores]
+  (let [result-folder "/tmp/roborunner/"
+        result-num (inc (num-battles))
+        result-file (str result-folder result-num ".json")]
+     (io/make-parents result-file)
+     (spit result-file (json/write-str battle-scores))
+     battle-scores))
+
+
+(defn- send-results
+  "Sends the battle results object to all subscribed websockets."
+  [results]
+  (websockets/update-json results))
+
+
+(defn get-battle-files
+  [battle-dir]
+  (->> battle-dir
+       io/file
+       .list))
+
+
+(defn post-battle-cleanup
+  [results]
+  (-> results
+      save-battle-results
+      send-results))
 
 
 (defn run-battle

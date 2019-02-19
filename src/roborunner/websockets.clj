@@ -1,6 +1,7 @@
 (ns roborunner.websockets
   (:require [org.httpkit.server
-             :refer [send! with-channel on-close on-receive]]))
+             :refer [send! with-channel on-close on-receive]]
+            [clojure.data.json :as json]))
 
 
 (defonce channels (atom #{}))
@@ -30,3 +31,9 @@
     (connect! channel)
     (on-close channel (partial disconnect! channel))
     (on-receive channel #(notify-clients %))))
+
+
+(defn update-json
+  [data]
+  (notify-clients (json/write-str data)))
+
