@@ -2,7 +2,7 @@
   (:require [roborunner.bots :as bots]
             [roborunner.runner :as runner]
             [roborunner.battle :as battle]
-            [roborunner.websockets :refer [we-handler]]
+            [roborunner.websockets :refer [ws-handler]]
             [compojure.core :refer [defroutes GET POST]]
             [compojure.route :as route]
             [ring.middleware.json :refer [wrap-json-params]]
