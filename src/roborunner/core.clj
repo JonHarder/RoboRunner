@@ -22,9 +22,9 @@
 (defroutes routes
   (GET "/robots"
     []
-    (-> bots/get-bots
-        (map bots/bot-name)
-        response))
+    (->> (bots/get-bots)
+         (map bots/bot-name)
+         (response)))
 
   (POST "/battles"
     []

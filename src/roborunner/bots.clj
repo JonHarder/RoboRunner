@@ -22,10 +22,10 @@
 (defn bot-name
   [bot-file]
   (-> bot-file
-      (io/file)
-      (.getName)
+      io/file
+      .getName
       (str/split #"\.")
-      (first)))
+      first))
 
 
 (defn make-equals-pair
