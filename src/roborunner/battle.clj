@@ -66,10 +66,29 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
     {:name bot-class :score score}))
   
 
+(defn- parse-first
+  [score-line]
+  {:first (parse-single-result score-line)})
+
+
+(defn- parse-second
+  [score-line]
+  {:second (parse-single-result score-line)})
+
+
+(defn- parse-score-lines
+  [battle-results]
+  (->> battle-results
+       str/split-lines
+       reverse
+       (take 2)
+       reverse))
+
+
 (defn- parse-battle-results
   [battle-results]
-  (let [results (reverse (take 2 (reverse (str/split-lines battle-results))))]
-    (map parse-single-result results)))
+  (let [[first second] (parse-score-lines battle-results)]
+    (into (parse-first first) (parse-second second))))
 
 
 (defn num-battles
@@ -113,5 +132,6 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
 
 (defn run-battle
   [battle-file]
-  (let [results (execute-battle battle-file)]
-    (parse-battle-results results)))
+  (-> battle-file
+      execute-battle
+      parse-battle-results))
