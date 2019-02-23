@@ -1,6 +1,7 @@
 (ns roborunner.runner
   (:require [roborunner.bots :as bots]
             [roborunner.battle :as battle]
+            [roborunner.websockets :as ws]
             [clojure.data.json :as json]
             [clojure.java.io :as io]))
 
@@ -13,13 +14,14 @@
   [results]
   {:battles results})
 
+
 (defn read-battle-results
   [n]
   (let [results-folder "/tmp/roborunner/"
         result-file (str results-folder n ".json")
         f (io/file result-file)]
     (when (.exists f)
-       (json/read-str (slurp f)))))
+      (json/read-str (slurp f)))))
 
 
 (defn run
@@ -27,10 +29,9 @@
    (let [bots (bots/get-bots robots-folder)]
      (battle/create-battles bots battle-folder)
      (->> (battle/get-battle-files battle-folder)
-          (map battle/run-battle)
+          (ws/map-notify battle/run-battle)
           calculate-battle-scores
-          battle/post-battle-cleanup)
-     (println "battle finished!")))
+          battle/post-battle-cleanup)))
   ([]
    (run battle-dir robot-dir)))
 

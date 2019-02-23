@@ -30,7 +30,6 @@
     []
     (let [battle-id (inc (battle/num-battles))
           link (str "/battles/" battle-id)]
-      (println "starting battle" battle-id)
       (future (runner/run))
       (response {:message "battle started" :forward link} 201)))
 

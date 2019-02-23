@@ -113,7 +113,7 @@ robocode.battle.initialPositions=(50,50,0),(?,?,?)" bot1 bot2))
 (defn- send-results
   "Sends the battle results object to all subscribed websockets."
   [results]
-  (websockets/update-json results))
+  (websockets/send-message "results" results))
 
 
 (defn get-battle-files

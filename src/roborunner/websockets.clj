@@ -33,7 +33,35 @@
     (on-receive channel #(notify-clients %))))
 
 
-(defn update-json
+
+(defn- update-json
   [data]
   (notify-clients (json/write-str data)))
 
+
+(defn send-message
+  ([message-type]
+   (send-message message-type nil))
+  ([message-type data]
+   (update-json
+    {:message message-type
+     :data data})))
+
+
+(defn- update-progress
+  [current total]
+  (send-message "progress"
+                {:complete current
+                 :out-of total}))
+
+
+(defn map-notify
+  [fn_ coll]
+  (let [total (count coll)]
+    (update-progress 0 total)
+    (map-indexed
+     (fn [idx x]
+       (let [new-x (fn_ x)]
+         (update-progress (inc idx) total)
+         new-x))
+     coll)))
