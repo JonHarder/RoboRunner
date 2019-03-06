@@ -37,6 +37,12 @@
     [id]
     (response (runner/read-battle-results id)))
 
+  (POST "/upload/:name"
+    [name :as request]
+    (let [{body :body} request]
+      (bots/save-bot name body)
+      (response {:status "uploaded"})))
+
   (GET "/download/:name"
     [name]
     (bots/get-bot-stream name))

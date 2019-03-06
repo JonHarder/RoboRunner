@@ -1,7 +1,8 @@
 (ns roborunner.bots
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
-            [roborunner.jar :as jar]))
+            [roborunner.jar :as jar]
+            [roborunner.websockets :as ws]))
 
 
 (def bot-dir "/Users/jharder/robocode/robots")
@@ -10,6 +11,13 @@
 (defn get-bot-stream
   [bot-name]
   (io/input-stream (str bot-dir "/" bot-name)))
+
+
+(defn save-bot
+  [name bot-byte-stream]
+  (let [out-file (str bot-dir "/" name)]
+    (spit out-file bot-byte-stream)
+    (ws/send-message :bot-uploaded)))
 
 
 (defn get-bots
