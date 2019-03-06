@@ -7,6 +7,11 @@
 (def bot-dir "/Users/jharder/robocode/robots")
 
 
+(defn get-bot-stream
+  [bot-name]
+  (io/input-stream (str bot-dir "/" bot-name)))
+
+
 (defn get-bots
   "Returns a list of absolute file paths to all of the bots"
   ([]
@@ -24,8 +29,7 @@
   (-> bot-file
       io/file
       .getName
-      (str/split #"\.")
-      first))
+      (str/replace #"(\w+)\.jar$" "$1")))
 
 
 (defn make-equals-pair

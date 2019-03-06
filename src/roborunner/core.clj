@@ -37,6 +37,10 @@
     [id]
     (response (runner/read-battle-results id)))
 
+  (GET "/download/:name"
+    [name]
+    (bots/get-bot-stream name))
+
   (GET "/ws"
     request
     (ws-handler request))
