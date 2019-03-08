@@ -5,6 +5,7 @@
             [roborunner.websockets :refer [ws-handler]]
             [compojure.core :refer [defroutes GET POST]]
             [compojure.route :as route]
+            [clojure.java.io :as io]
             [ring.middleware.json :refer [wrap-json-params]]
             [ring.middleware.cors :refer [wrap-cors]]
             [clojure.data.json :as json]
@@ -40,8 +41,16 @@
   (POST "/upload/:name"
     [name :as request]
     (let [{body :body} request]
-      (bots/save-bot name body)
-      (response {:status "uploaded"})))
+      (let [data (slurp body)
+            tmp-file (str "/tmp/" name)]
+        (spit tmp-file data)
+        (if (bots/valid-bot? tmp-file)
+          (do (io/delete-file tmp-file)
+              (bots/save-bot name data)
+              (response {:status "uploaded"}))
+          (do (io/delete-file tmp-file)
+              (response {:message "invalid bot"} 400))))))
+
 
   (GET "/download/:name"
     [name]

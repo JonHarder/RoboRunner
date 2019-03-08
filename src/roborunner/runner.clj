@@ -27,6 +27,7 @@
 (defn run
   ([battle-folder robots-folder]
    (let [bots (bots/get-bots robots-folder)]
+     (map io/delete-file (.listFiles (io/file battle-folder)))
      (battle/create-battles bots battle-folder)
      (->> (battle/get-battle-files battle-folder)
           (ws/map-notify battle/run-battle)

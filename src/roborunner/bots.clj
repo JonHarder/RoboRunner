@@ -58,14 +58,20 @@
 (defn read-properties-file
   [jar-file]
   (let [prop-file (jar/find-file-in-jar jar-file #"\.properties$")]
-    (jar/read-jar-file jar-file prop-file)))
+    (and (not (empty? prop-file))
+         (jar/read-jar-file jar-file prop-file))))
 
 
 (defn get-classname
   [jar-file]
   (let [props-file (read-properties-file jar-file)
-        props (parse-properties-file props-file)]
-    (get props "robot.classname")))
+        props (and props-file (parse-properties-file props-file))]
+    (and props (get props "robot.classname"))))
+
+
+(defn valid-bot?
+  [bot-file]
+  (string? (get-classname bot-file)))
 
 
 (defn gather-bot-info
